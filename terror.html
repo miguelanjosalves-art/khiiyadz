@@ -16,18 +16,7 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Container dos Olhos */
-        #scary-face {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .eyes-container {
-            display: flex;
-            gap: 120px;
-        }
-
+        /* Olhos iniciais */
         .eye {
             width: 140px;
             height: 80px;
@@ -48,7 +37,6 @@
             transition: all 1s;
         }
 
-        /* Mensagens de Texto */
         .msg {
             font-size: 24px;
             opacity: 0;
@@ -62,39 +50,37 @@
 
         #text2 { color: #8b0000; font-weight: bold; }
 
-        /* Gatilho de Clique (Invisível) */
-        #click-trigger {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 999;
-            display: none;
-            cursor: pointer;
-        }
-
-        /* O JUMPSCARE (Tela Inteira) */
+        /* --- O JUMPSCARE --- */
         #jumpscare-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background-image: url('https://i.pinimg.com/736x/ef/6d/44/ef6d44dd25f0570371492461aeb8216b.jpg'); /* NOME DA SUA IMAGEM AQUI */
+            /* Usando o nome da imagem enviada */
+            background-image: url('https://i.pinimg.com/736x/ef/6d/44/ef6d44dd25f0570371492461aeb8216b.jpg'); 
             background-size: cover;
             background-position: center;
             z-index: 9999;
             display: none;
         }
 
-        /* Esconder o Player do YouTube completamente */
-        #video-container {
-            position: absolute;
-            left: -9999px; /* Joga o vídeo para longe da tela */
-            top: -9999px;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
+        #click-trigger {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 998;
+            display: none;
+            cursor: pointer;
         }
 
-        /* Efeitos de Animação */
+        /* Área do Som Escondida */
+        #video-container { 
+            position: absolute; 
+            width: 1px; 
+            height: 1px; 
+            opacity: 0.01; 
+            left: -10px; 
+        }
+
         .pupil-point { width: 8px !important; height: 8px !important; }
         .face-vibrate { animation: shake 0.1s linear infinite; }
 
@@ -108,7 +94,7 @@
 <body>
 
     <div id="scary-face">
-        <div class="eyes-container">
+        <div style="display:flex; gap:120px;">
             <div class="eye"><div class="pupil"></div></div>
             <div class="eye"><div class="pupil"></div></div>
         </div>
@@ -130,9 +116,10 @@
         const overlay = document.getElementById('jumpscare-overlay');
         const video = document.getElementById('video-container');
 
-        // Sequência de tempo
+        // 10s: Texto 1
         setTimeout(() => { t1.style.opacity = '1'; }, 10000);
 
+        // 20s: Texto 2 + Olhos
         setTimeout(() => {
             t1.style.opacity = '0';
             setTimeout(() => {
@@ -142,27 +129,25 @@
             }, 1000);
         }, 20000);
 
+        // 30s: Texto some
         setTimeout(() => {
             t2.style.opacity = '0';
-            // Libera o clique 2 segundos após o texto sumir
-            setTimeout(() => {
-                trigger.style.display = 'block';
-            }, 2000);
+            // 32s: Libera o clique mortal
+            setTimeout(() => { trigger.style.display = 'block'; }, 2000);
         }, 30000);
 
-        // O SUSTO AO CLICAR
+        // O SUSTO (Ao clicar)
         trigger.addEventListener('click', () => {
             overlay.style.display = 'block';
             
-            // Link do som do YT escondido (Grito Agudo)
-            // Usamos autoplay=1 e mute=0
-            video.innerHTML = `<iframe src="https://youtu.be/xLIMTrlm2bE`;
+            // NOVO LINK COM COMANDOS DE AUTOPLAY FORÇADO
+            // O link xLIMTrlm2bE agora tem parâmetros para ignorar bloqueios
+            video.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/xLIMTrlm2bE?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
 
-            // Mantém por 3 segundos
             setTimeout(() => {
                 overlay.style.display = 'none';
                 video.innerHTML = ''; // Para o som
-                document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:45vh;">MARCADO.</h1>';
+                document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:45vh;">ESTÁ ATRÁS DE VOCÊ.</h1>';
             }, 3000);
         });
     </script>
