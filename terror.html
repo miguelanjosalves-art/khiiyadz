@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Eles Estão Vendo</title>
+    <title>O Encarar</title>
     <style>
         body {
             background-color: #000;
@@ -16,16 +16,24 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
+        /* Container Principal que agrupa os olhos */
+        .scary-face-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            /* Esta propriedade é crucial para que o tremor (transform) não quebre o layout */
+            will-change: transform; 
+        }
+
         .eyes-container {
             display: flex;
             gap: 120px;
             position: relative;
             margin-bottom: 50px;
-            /* Esta propriedade é crucial para que a tremidinha (transform) não quebre o layout */
-            will-change: transform; 
         }
 
-        /* --- Estilo Base dos Olhos --- */
+        /* --- Estilo Base dos Olhos (Névoa) --- */
         .eye {
             width: 140px;
             height: 80px;
@@ -47,143 +55,166 @@
             animation: cloudShift 6s ease-in-out infinite alternate;
         }
 
-        /* --- Estilo da Pupila ( começa redonda ) --- */
+        /* --- Estilo da Pupila --- */
         .pupil {
-            width: 50px;
-            height: 50px;
+            /* Tamanho inicial "normal" */
+            width: 45px; 
+            height: 45px;
             background-color: #000;
-            border-radius: 50%; /* Pupila redonda padrão */
+            border-radius: 50%;
             position: absolute;
             top: 50%; left: 50%;
-            transform: translate(-50%, -50%); /* Centraliza */
+            transform: translate(-50%, -50%);
             filter: blur(1px);
-            transition: border-radius 1s ease-in-out, width 1s ease-in-out, height 1s ease-in-out;
+            /* Transição suave para encolher */
+            transition: width 1s ease-in-out, height 1s ease-in-out;
             z-index: 10;
         }
 
-        /* --- Texto 1 --- */
-        #warning-text1 {
-            color: #444; /* Cinza escura */
-            font-size: 24px;
+        /* --- Estilo do Sorriso Sinistro --- */
+        .mouth-smile {
+            width: 320px;
+            height: 140px;
+            position: absolute;
+            bottom: -160px; /* Posiciona embaixo dos olhos */
+            
+            /* Esta borda irregular (border-radius) cria o formato orgânico da boca da foto */
+            border-radius: 60% 60% 20% 20% / 100% 100% 20% 20%;
+            
+            /* Gradiente CSS complexo que simula o desenho dos dentes e as gengivas */
+            background: 
+                linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.7) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.7) 50%, transparent 52%),
+                linear-gradient(to right, transparent 5px, rgba(0,0,0,0.8) 10px, transparent 15px),
+                linear-gradient(to bottom, #000 0%, #222 10%, #fff 25%, #fff 75%, #222 90%, #000 100%);
+            background-size: 30px 30px, 30px 30px, 10px 100%, 100% 100%;
+            background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+            
+            /* Começa invisível e escondida */
             opacity: 0;
-            transition: opacity 2s;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            letter-spacing: 5px;
-            position: absolute; /* Para que o texto 2 apareça exatamente no mesmo lugar */
-            bottom: 20%;
+            transform: scaleY(0.1);
+            transition: opacity 2s, transform 1.5s ease-out;
+            
+            box-shadow: 0 0 20px rgba(0,0,0,0.9);
+            z-index: 5;
         }
 
-        /* --- Texto 2 --- */
-        #warning-text2 {
-            color: #8b0000; /* Vermelho Sangue Escuro */
-            font-size: 28px; /* Ligeiramente maior para impacto */
+        /* --- TEXTOS --- */
+        .msg {
+            font-size: 24px;
             opacity: 0;
-            transition: opacity 1s; /* Transição mais rápida */
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-            letter-spacing: 7px;
-            font-weight: bold;
+            transition: opacity 1.5s;
+            letter-spacing: 5px;
             position: absolute;
             bottom: 20%;
+            text-align: center;
+        }
+
+        #text1 { color: #444; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        #text2 { color: #8b0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); font-weight: bold; }
+
+        /* =========================================
+           CLASSES DE EFEITO (Ativadas pelo JS)
+           ========================================= */
+
+        /* A pupila vira um pontinho minúsculo */
+        .pupil-point {
+            width: 7px !important;
+            height: 7px !important;
+        }
+
+        /* Tremor constante e rápido de toda a face */
+        .face-vibrate {
+            animation: faceShake 0.12s linear infinite;
+        }
+
+        /* Faz o sorriso aparecer crescendo */
+        .mouth-reveal {
+            opacity: 0.9;
+            transform: scaleY(1);
         }
 
         /* =========================================
            ANIMAÇÕES (Keyframes)
            ========================================= */
 
-        /* 1. Animação de Névoa do Olho (Nó já tínhamos) */
+        @keyframes faceShake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+            100% { transform: translate(2px, 2px); }
+        }
+
         @keyframes cloudShift {
             0% { border-radius: 60% 40% 60% 40% / 70% 30% 70% 30%; }
             100% { border-radius: 40% 60% 40% 60% / 30% 70% 30% 70%; }
-        }
-
-        /* 2. NOVA ANIMAÇÃO: Tremor dos Olhos (Eye Shake) */
-        @keyframes eyeShake {
-            0% { transform: translate(0, 0); }
-            10% { transform: translate(-3px, 3px); }
-            20% { transform: translate(3px, -3px); }
-            30% { transform: translate(-3px, -3px); }
-            40% { transform: translate(3px, 3px); }
-            50% { transform: translate(-3px, 3px); }
-            60% { transform: translate(3px, -3px); }
-            70% { transform: translate(-3px, -3px); }
-            80% { transform: translate(3px, 3px); }
-            90% { transform: translate(-3px, 3px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        /* =========================================
-           CLASSES DE EFEITO (Ativadas pelo JS)
-           ========================================= */
-
-        /* Classe que faz o container de olhos tremer */
-        .eyes-vibrate {
-            animation: eyeShake 0.15s linear infinite; /* Tremor muito rápido */
-        }
-
-        /* Classe que faz a pupila ficar fina (estilo réptil/fenda) */
-        .pupil-narrow {
-            width: 15px; /* Estreita */
-            height: 60px; /* Longa */
-            border-radius: 10px 10px 10px 10px; /* Formato de fenda vertical */
         }
 
     </style>
 </head>
 <body>
 
-    <div id="eyes-container" class="eyes-container">
-        <div class="eye left"><div class="pupil"></div></div>
-        <div class="eye right"><div class="pupil"></div></div>
+    <div id="scary-face" class="scary-face-container">
+        <div id="eyes-box" class="eyes-container">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
+        </div>
+        
+        <div id="mouth" class="mouth-smile"></div>
     </div>
 
-    <div id="warning-text1">mark... vamos te caçar...</div>
-    <div id="warning-text2">caçar ate sua morte...</div>
+    <div id="text1" class="msg">mark... vamos te caçar...</div>
+    <div id="text2" class="msg">caçar ate sua morte...</div>
 
     <script>
-        // Seleciona os elementos que vamos manipular
-        const container = document.getElementById('eyes-container');
+        // Seleciona os elementos
+        const scaryFace = document.getElementById('scary-face');
         const pupils = document.querySelectorAll('.pupil');
-        const text1 = document.getElementById('warning-text1');
-        const text2 = document.getElementById('warning-text2');
+        const t1 = document.getElementById('text1');
+        const t2 = document.getElementById('text2');
+        const mouth = document.getElementById('mouth');
 
         // --- LINHA DO TEMPO DO TERROR ---
 
-        // Fase 1: Início
-        // Espera 10 segundos e mostra o Texto 1
+        // Fase 1: 10 segundos
+        // Mostra o primeiro texto.
         setTimeout(() => {
-            text1.style.opacity = '1';
-        }, 10000); 
+            t1.style.opacity = '1';
+        }, 10000);
 
-        // Fase 2: A Mudança
-        // Espera mais 10 segundos (total 20s)
+        // Fase 2: 20 segundos
+        // Troca o texto e ativa o terror PERMANENTE nos olhos.
         setTimeout(() => {
-            // A. Esconde o Texto 1
-            text1.style.opacity = '0';
+            // A. Esconde o primeiro texto
+            t1.style.opacity = '0';
 
-            // B. Mostra o Texto 2 (com um pequeno atraso de 1s para o texto 1 sumir)
+            // B. Pequeno atraso para o texto 2 aparecer
             setTimeout(() => {
-                text2.style.opacity = '1';
-
-                // C. ATIVA OS EFEITOS DE TERROR NOS OLHOS
-                container.classList.add('eyes-vibrate'); // Adiciona o tremor
-                pupils.forEach(pupil => pupil.classList.add('pupil-narrow')); // Estreita a pupila
+                t2.style.opacity = '1';
+                
+                // C. ATIVA O TERROR NOS OLHOS (permanente)
+                // Faz a pupila encolher para um pontinho
+                pupils.forEach(p => p.classList.add('pupil-point'));
+                // Faz toda a face começar a tremer
+                scaryFace.classList.add('face-vibrate');
             }, 1000);
 
         }, 20000); // 10s (fase 1) + 10s (texto 1)
 
-        // Fase 3: O Fim
-        // Espera mais 10 segundos para o Texto 2 (total 31s, considerando os atrasos)
+        // Fase 3: 30 segundos
+        // O segundo texto some de vez.
         setTimeout(() => {
-            // A. Esconde o Texto 2
-            text2.style.opacity = '0';
+            t2.style.opacity = '0';
+        }, 30000);
 
-            // B. DESATIVA OS EFEITOS (Olhos voltam ao normal)
-            container.classList.remove('eyes-vibrate');
-            pupils.forEach(pupil => pupil.classList.remove('pupil-narrow'));
-
-        }, 31000);
+        // Fase 4: 33 segundos (3 segundos depois do texto sumir)
+        // O SORRISO É REVELADO.
+        setTimeout(() => {
+            // A classe 'mouth-reveal' faz o sorriso aparecer e crescer.
+            mouth.classList.add('mouth-reveal');
+        }, 33000); // 30s (fase 3) + 3s (atraso)
 
     </script>
-
 </body>
 </html>
