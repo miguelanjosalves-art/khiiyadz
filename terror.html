@@ -16,7 +16,7 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Container Principal que agrupa os olhos */
+        /* Container Principal que agrupa os olhos e a boca */
         .scary-face-container {
             display: flex;
             flex-direction: column;
@@ -30,7 +30,7 @@
             display: flex;
             gap: 120px;
             position: relative;
-            margin-bottom: 50px;
+            margin-bottom: 50px; /* Espaço para o texto/boca aparecer embaixo */
         }
 
         /* --- Estilo Base dos Olhos (Névoa) --- */
@@ -71,31 +71,24 @@
             z-index: 10;
         }
 
-        /* --- Estilo do Sorriso Sinistro --- */
+        /* --- Estilo do Sorriso Assustador (Nova Imagem) --- */
         .mouth-smile {
-            width: 320px;
+            width: 320px; /* Tamanho proporcional */
             height: 140px;
             position: absolute;
             bottom: -160px; /* Posiciona embaixo dos olhos */
             
-            /* Esta borda irregular (border-radius) cria o formato orgânico da boca da foto */
-            border-radius: 60% 60% 20% 20% / 100% 100% 20% 20%;
-            
-            /* Gradiente CSS complexo que simula o desenho dos dentes e as gengivas */
-            background: 
-                linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.7) 50%, transparent 52%),
-                linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.7) 50%, transparent 52%),
-                linear-gradient(to right, transparent 5px, rgba(0,0,0,0.8) 10px, transparent 15px),
-                linear-gradient(to bottom, #000 0%, #222 10%, #fff 25%, #fff 75%, #222 90%, #000 100%);
-            background-size: 30px 30px, 30px 30px, 10px 100%, 100% 100%;
-            background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+            /* Define a imagem fornecida como fundo da boca */
+            background-image: url('data:image/png;base64,${base64Image}'); /* Imagem inserida em Base64 para funcionar diretamente */
+            background-size: contain; /* Faz a imagem caber sem distorcer */
+            background-repeat: no-repeat;
+            background-position: center;
             
             /* Começa invisível e escondida */
             opacity: 0;
             transform: scaleY(0.1);
             transition: opacity 2s, transform 1.5s ease-out;
             
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
             z-index: 5;
         }
 
@@ -177,14 +170,14 @@
 
         // --- LINHA DO TEMPO DO TERROR ---
 
-        // Fase 1: 10 segundos
-        // Mostra o primeiro texto.
+        // Fase 1: Início
+        // Espera 10 segundos e mostra o Texto 1.
         setTimeout(() => {
             t1.style.opacity = '1';
         }, 10000);
 
-        // Fase 2: 20 segundos
-        // Troca o texto e ativa o terror PERMANENTE nos olhos.
+        // Fase 2: A Mudança
+        // Espera mais 10 segundos (total 20s). Troca o texto e ativa o terror nos olhos.
         setTimeout(() => {
             // A. Esconde o primeiro texto
             t1.style.opacity = '0';
@@ -202,18 +195,18 @@
 
         }, 20000); // 10s (fase 1) + 10s (texto 1)
 
-        // Fase 3: 30 segundos
-        // O segundo texto some de vez.
+        // Fase 3: O Fim das Palavras
+        // Espera mais 10 segundos (total 31s, considerando os atrasos). O texto some.
         setTimeout(() => {
             t2.style.opacity = '0';
-        }, 30000);
+        }, 31000);
 
-        // Fase 4: 33 segundos (3 segundos depois do texto sumir)
-        // O SORRISO É REVELADO.
+        // Fase 4: A Revelação Final
+        // Espera 3 segundos DEPOIS que o texto some (total 34s). O SORRISO APARECE.
         setTimeout(() => {
             // A classe 'mouth-reveal' faz o sorriso aparecer e crescer.
             mouth.classList.add('mouth-reveal');
-        }, 33000); // 30s (fase 3) + 3s (atraso)
+        }, 34000); // 31s (fase 3) + 3s (atraso)
 
     </script>
 </body>
