@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>O Encarar</title>
+    <title>NÃO CLIQUE</title>
     <style>
         body {
             background-color: #000;
@@ -16,84 +16,39 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Container Principal que agrupa os olhos e a boca */
-        .scary-face-container {
+        /* Container dos Olhos */
+        #scary-face {
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
-            /* Esta propriedade é crucial para que o tremor (transform) não quebre o layout */
-            will-change: transform; 
         }
 
         .eyes-container {
             display: flex;
             gap: 120px;
-            position: relative;
-            margin-bottom: 50px;
         }
 
-        /* --- Estilo Base dos Olhos (Névoa) --- */
         .eye {
             width: 140px;
             height: 80px;
-            position: relative;
-            background-color: #000;
-            border-radius: 50%;
-            overflow: hidden;
-            filter: blur(2px);
-        }
-
-        .eye::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
             background: radial-gradient(circle at center, #666 0%, #333 30%, transparent 60%);
             border-radius: 60% 40% 60% 40% / 70% 30% 70% 30%;
-            opacity: 0.7;
-            animation: cloudShift 6s ease-in-out infinite alternate;
+            filter: blur(2px);
+            position: relative;
         }
 
-        /* --- Estilo da Pupila --- */
         .pupil {
-            /* Tamanho inicial "normal" */
-            width: 45px; 
+            width: 45px;
             height: 45px;
             background-color: #000;
             border-radius: 50%;
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            filter: blur(1px);
-            /* Transição suave para encolher */
-            transition: width 1s ease-in-out, height 1s ease-in-out;
-            z-index: 10;
+            transition: all 1s;
         }
 
-        /* --- Estilo da Boca (Que começa escondida) --- */
-        .mouth-container {
-            width: 300px; /* Tamanho proporcional à face */
-            height: 150px;
-            position: absolute;
-            bottom: -180px; /* Posiciona embaixo dos olhos */
-            
-            /* Esta borda irregular (border-radius) cria o formato orgânico da boca da foto */
-            border-radius: 60% 60% 20% 20% / 100% 100% 20% 20%;
-            
-            /* Começa invisível e escondida */
-            opacity: 0;
-            transform: scaleY(0.1);
-            transition: opacity 2s, transform 1s ease-out;
-            
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
-            z-index: 5;
-            
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* --- TEXTOS --- */
+        /* Mensagens de Texto */
         .msg {
             font-size: 24px;
             opacity: 0;
@@ -102,117 +57,114 @@
             position: absolute;
             bottom: 20%;
             text-align: center;
+            color: #444;
         }
 
-        #text1 { color: #444; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
-        #text2 { color: #8b0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); font-weight: bold; }
+        #text2 { color: #8b0000; font-weight: bold; }
 
-        /* =========================================
-           CLASSES DE EFEITO (Ativadas pelo JS)
-           ========================================= */
-
-        /* A pupila vira um pontinho minúsculo */
-        .pupil-point {
-            width: 7px !important;
-            height: 7px !important;
+        /* Gatilho de Clique (Invisível) */
+        #click-trigger {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 999;
+            display: none;
+            cursor: pointer;
         }
 
-        /* Tremor constante e rápido de toda a face */
-        .face-vibrate {
-            animation: faceShake 0.1s linear infinite; /* Mais rápido para maior terror */
+        /* O JUMPSCARE (Tela Inteira) */
+        #jumpscare-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: url('https://i.pinimg.com/736x/ef/6d/44/ef6d44dd25f0570371492461aeb8216b.jpg'); /* NOME DA SUA IMAGEM AQUI */
+            background-size: cover;
+            background-position: center;
+            z-index: 9999;
+            display: none;
         }
 
-        /* =========================================
-           ANIMAÇÕES (Keyframes)
-           ========================================= */
-
-        @keyframes faceShake {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(-3px, 3px); }
-            50% { transform: translate(3px, -3px); }
-            75% { transform: translate(-3px, -3px); }
-            100% { transform: translate(3px, 3px); }
+        /* Esconder o Player do YouTube completamente */
+        #video-container {
+            position: absolute;
+            left: -9999px; /* Joga o vídeo para longe da tela */
+            top: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
         }
 
-        @keyframes cloudShift {
-            0% { border-radius: 60% 40% 60% 40% / 70% 30% 70% 30%; }
-            100% { border-radius: 40% 60% 40% 60% / 30% 70% 30% 70%; }
-        }
+        /* Efeitos de Animação */
+        .pupil-point { width: 8px !important; height: 8px !important; }
+        .face-vibrate { animation: shake 0.1s linear infinite; }
 
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-2px, -2px); }
+            100% { transform: translate(1px, 1px); }
+        }
     </style>
 </head>
 <body>
 
-    <div id="scary-face" class="scary-face-container">
-        <div id="eyes-box" class="eyes-container">
-            <div class="eye left"><div class="pupil"></div></div>
-            <div class="eye right"><div class="pupil"></div></div>
+    <div id="scary-face">
+        <div class="eyes-container">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye"><div class="pupil"></div></div>
         </div>
-        
-        <div id="mouth" class="mouth-container"></div>
     </div>
 
     <div id="text1" class="msg">mark... vamos te caçar...</div>
     <div id="text2" class="msg">caçar ate sua morte...</div>
 
+    <div id="click-trigger"></div>
+    <div id="jumpscare-overlay"></div>
+    <div id="video-container"></div>
+
     <script>
-        // Seleciona os elementos
-        const scaryFace = document.getElementById('scary-face');
+        const face = document.getElementById('scary-face');
         const pupils = document.querySelectorAll('.pupil');
         const t1 = document.getElementById('text1');
         const t2 = document.getElementById('text2');
-        const mouth = document.getElementById('mouth');
+        const trigger = document.getElementById('click-trigger');
+        const overlay = document.getElementById('jumpscare-overlay');
+        const video = document.getElementById('video-container');
 
-        // --- LINHA DO TEMPO DO TERROR ---
+        // Sequência de tempo
+        setTimeout(() => { t1.style.opacity = '1'; }, 10000);
 
-        // Fase 1: 10 segundos
-        // Mostra o primeiro texto.
         setTimeout(() => {
-            t1.style.opacity = '1';
-        }, 10000);
-
-        // Fase 2: 20 segundos
-        // Troca o texto e ativa o terror PERMANENTE nos olhos.
-        setTimeout(() => {
-            // A. Esconde o primeiro texto
             t1.style.opacity = '0';
-
-            // B. Pequeno atraso para o texto 2 aparecer
             setTimeout(() => {
                 t2.style.opacity = '1';
-                
-                // C. ATIVA O TERROR NOS OLHOS (permanente)
-                // Faz a pupila encolher para um pontinho
+                face.classList.add('face-vibrate');
                 pupils.forEach(p => p.classList.add('pupil-point'));
-                // Faz toda a face começar a tremer (spasm)
-                scaryFace.classList.add('face-vibrate');
             }, 1000);
+        }, 20000);
 
-        }, 20000); // 10s (fase 1) + 10s (texto 1)
-
-        // Fase 3: 30 segundos
-        // O segundo texto some de vez.
         setTimeout(() => {
             t2.style.opacity = '0';
+            // Libera o clique 2 segundos após o texto sumir
+            setTimeout(() => {
+                trigger.style.display = 'block';
+            }, 2000);
         }, 30000);
 
-        // Fase 4: 33 segundos (3 segundos depois do texto sumir)
-        // A REVELAÇÃO FINAL.
-        setTimeout(() => {
-            // A. Mostra a boca
-            mouth.style.opacity = '0.9'; // Semi-transparente para misturar com a névoa
-            mouth.style.transform = 'scaleY(1)'; // Faz a boca crescer
+        // O SUSTO AO CLICAR
+        trigger.addEventListener('click', () => {
+            overlay.style.display = 'block';
             
-            // B. Tenta carregar o GIF animado para o efeito de abrir a boca
-            // Se você não tiver o GIF, a imagem estática (parada) será usada.
-            // O ideal é ter as duas na mesma pasta: 'sorriso-gif.gif' e 'sorriso-parado.jpg'
-            
-            // Se o navegador não suportar ou o arquivo não existir, 
-            // usa a imagem estática (sua foto) como "back-up"
-            mouth.style.backgroundImage += ", url('https://i.pinimg.com/736x/fb/22/fd/fb22fde014438accd3dac6dadf5d2e67.jpg')";
-            
-        }, 33000); // 30s (fase 3) + 3s (atraso)
+            // Link do som do YT escondido (Grito Agudo)
+            // Usamos autoplay=1 e mute=0
+            video.innerHTML = `<iframe src="https://www.youtube.com/shorts/89jnunx5p_A?feature=share?autoplay=1&mute=0" allow="autoplay"></iframe>`;
 
+            // Mantém por 3 segundos
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                video.innerHTML = ''; // Para o som
+                document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:45vh;">MARCADO.</h1>';
+            }, 3000);
+        });
     </script>
 </body>
 </html>
