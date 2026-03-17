@@ -16,11 +16,13 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
+        /* Container Principal que agrupa os olhos e a boca */
         .scary-face-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
+            /* Esta propriedade é crucial para que o tremor (transform) não quebre o layout */
             will-change: transform; 
         }
 
@@ -31,6 +33,7 @@
             margin-bottom: 50px;
         }
 
+        /* --- Estilo Base dos Olhos (Névoa) --- */
         .eye {
             width: 140px;
             height: 80px;
@@ -52,7 +55,9 @@
             animation: cloudShift 6s ease-in-out infinite alternate;
         }
 
+        /* --- Estilo da Pupila --- */
         .pupil {
+            /* Tamanho inicial "normal" */
             width: 45px; 
             height: 45px;
             background-color: #000;
@@ -61,100 +66,155 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             filter: blur(1px);
+            /* Transição suave para encolher */
             transition: width 1s ease-in-out, height 1s ease-in-out;
             z-index: 10;
         }
 
-        /* --- CONFIGURAÇÃO DA IMAGEM DO SORRISO --- */
-        .mouth-smile {
-            width: 400px; 
-            height: 200px;
+        /* --- Estilo da Boca (Que começa escondida) --- */
+        .mouth-container {
+            width: 300px; /* Tamanho proporcional à face */
+            height: 150px;
             position: absolute;
-            bottom: -180px;
+            bottom: -180px; /* Posiciona embaixo dos olhos */
             
-            /* AQUI ESTÁ O SEGREDO: O nome do arquivo tem que ser igual ao que você salvou */
-            background-image: url('sorriso.jpg'); 
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            /* Esta borda irregular (border-radius) cria o formato orgânico da boca da foto */
+            border-radius: 60% 60% 20% 20% / 100% 100% 20% 20%;
             
+            /* Começa invisível e escondida */
             opacity: 0;
             transform: scaleY(0.1);
-            transition: opacity 2s, transform 1.5s ease-out;
+            transition: opacity 2s, transform 1s ease-out;
+            
+            box-shadow: 0 0 20px rgba(0,0,0,0.9);
             z-index: 5;
+            
+            background-size: cover;
+            background-position: center;
         }
 
+        /* --- TEXTOS --- */
         .msg {
             font-size: 24px;
             opacity: 0;
             transition: opacity 1.5s;
             letter-spacing: 5px;
             position: absolute;
-            bottom: 15%;
+            bottom: 20%;
             text-align: center;
-            width: 100%;
         }
 
         #text1 { color: #444; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
         #text2 { color: #8b0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); font-weight: bold; }
 
-        /* Classes de ativação */
-        .pupil-point { width: 10px !important; height: 10px !important; }
-        .face-vibrate { animation: faceShake 0.12s linear infinite; }
-        .mouth-reveal { opacity: 1 !important; transform: scaleY(1) !important; }
+        /* =========================================
+           CLASSES DE EFEITO (Ativadas pelo JS)
+           ========================================= */
+
+        /* A pupila vira um pontinho minúsculo */
+        .pupil-point {
+            width: 7px !important;
+            height: 7px !important;
+        }
+
+        /* Tremor constante e rápido de toda a face */
+        .face-vibrate {
+            animation: faceShake 0.1s linear infinite; /* Mais rápido para maior terror */
+        }
+
+        /* =========================================
+           ANIMAÇÕES (Keyframes)
+           ========================================= */
 
         @keyframes faceShake {
             0% { transform: translate(0, 0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-2px, -2px); }
-            100% { transform: translate(2px, 2px); }
+            25% { transform: translate(-3px, 3px); }
+            50% { transform: translate(3px, -3px); }
+            75% { transform: translate(-3px, -3px); }
+            100% { transform: translate(3px, 3px); }
         }
 
         @keyframes cloudShift {
             0% { border-radius: 60% 40% 60% 40% / 70% 30% 70% 30%; }
             100% { border-radius: 40% 60% 40% 60% / 30% 70% 30% 70%; }
         }
+
     </style>
 </head>
 <body>
 
     <div id="scary-face" class="scary-face-container">
         <div id="eyes-box" class="eyes-container">
-            <div class="eye"><div class="pupil"></div></div>
-            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye left"><div class="pupil"></div></div>
+            <div class="eye right"><div class="pupil"></div></div>
         </div>
-        <div id="mouth" class="mouth-smile"></div>
+        
+        <div id="mouth" class="mouth-container"></div>
     </div>
 
     <div id="text1" class="msg">mark... vamos te caçar...</div>
     <div id="text2" class="msg">caçar ate sua morte...</div>
 
     <script>
+        // Seleciona os elementos
         const scaryFace = document.getElementById('scary-face');
         const pupils = document.querySelectorAll('.pupil');
         const t1 = document.getElementById('text1');
         const t2 = document.getElementById('text2');
         const mouth = document.getElementById('mouth');
 
-        // Cronômetro
-        setTimeout(() => { t1.style.opacity = '1'; }, 10000);
+        // --- LINHA DO TEMPO DO TERROR ---
 
+        // Fase 1: 10 segundos
+        // Mostra o primeiro texto.
         setTimeout(() => {
+            t1.style.opacity = '1';
+        }, 10000);
+
+        // Fase 2: 20 segundos
+        // Troca o texto e ativa o terror PERMANENTE nos olhos.
+        setTimeout(() => {
+            // A. Esconde o primeiro texto
             t1.style.opacity = '0';
+
+            // B. Pequeno atraso para o texto 2 aparecer
             setTimeout(() => {
                 t2.style.opacity = '1';
+                
+                // C. ATIVA O TERROR NOS OLHOS (permanente)
+                // Faz a pupila encolher para um pontinho
                 pupils.forEach(p => p.classList.add('pupil-point'));
+                // Faz toda a face começar a tremer (spasm)
                 scaryFace.classList.add('face-vibrate');
             }, 1000);
-        }, 20000);
 
-        setTimeout(() => { t2.style.opacity = '0'; }, 30000);
+        }, 20000); // 10s (fase 1) + 10s (texto 1)
 
-        // Revelação do Sorriso (33 segundos)
+        // Fase 3: 30 segundos
+        // O segundo texto some de vez.
         setTimeout(() => {
-            mouth.classList.add('mouth-reveal');
-        }, 33000);
+            t2.style.opacity = '0';
+        }, 30000);
+
+        // Fase 4: 33 segundos (3 segundos depois do texto sumir)
+        // A REVELAÇÃO FINAL.
+        setTimeout(() => {
+            // A. Mostra a boca
+            mouth.style.opacity = '0.9'; // Semi-transparente para misturar com a névoa
+            mouth.style.transform = 'scaleY(1)'; // Faz a boca crescer
+            
+            // B. Tenta carregar o GIF animado para o efeito de abrir a boca
+            // Se você não tiver o GIF, a imagem estática (parada) será usada.
+            // O ideal é ter as duas na mesma pasta: 'sorriso-gif.gif' e 'sorriso-parado.jpg'
+            
+            // Tenta usar o GIF animado primeiro
+            mouth.style.backgroundImage = "url('sorriso-gif.gif')"; 
+
+            // Se o navegador não suportar ou o arquivo não existir, 
+            // usa a imagem estática (sua foto) como "back-up"
+            mouth.style.backgroundImage += ", url('sorriso-parado.jpg')";
+            
+        }, 33000); // 30s (fase 3) + 3s (atraso)
 
     </script>
 </body>
