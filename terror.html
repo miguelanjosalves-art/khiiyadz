@@ -16,13 +16,11 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Container Principal que agrupa os olhos e a boca */
         .scary-face-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            /* Esta propriedade é crucial para que o tremor (transform) não quebre o layout */
             will-change: transform; 
         }
 
@@ -30,10 +28,9 @@
             display: flex;
             gap: 120px;
             position: relative;
-            margin-bottom: 50px; /* Espaço para o texto/boca aparecer embaixo */
+            margin-bottom: 50px;
         }
 
-        /* --- Estilo Base dos Olhos (Névoa) --- */
         .eye {
             width: 140px;
             height: 80px;
@@ -55,9 +52,7 @@
             animation: cloudShift 6s ease-in-out infinite alternate;
         }
 
-        /* --- Estilo da Pupila --- */
         .pupil {
-            /* Tamanho inicial "normal" */
             width: 45px; 
             height: 45px;
             background-color: #000;
@@ -66,70 +61,47 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             filter: blur(1px);
-            /* Transição suave para encolher */
             transition: width 1s ease-in-out, height 1s ease-in-out;
             z-index: 10;
         }
 
-        /* --- Estilo do Sorriso Assustador (Nova Imagem) --- */
+        /* --- CONFIGURAÇÃO DA IMAGEM DO SORRISO --- */
         .mouth-smile {
-            width: 320px; /* Tamanho proporcional */
-            height: 140px;
+            width: 400px; 
+            height: 200px;
             position: absolute;
-            bottom: -160px; /* Posiciona embaixo dos olhos */
+            bottom: -180px;
             
-            /* Define a imagem fornecida como fundo da boca */
-            background-image: url('data:image/png;base64,${base64Image}'); /* Imagem inserida em Base64 para funcionar diretamente */
-            background-size: contain; /* Faz a imagem caber sem distorcer */
+            /* AQUI ESTÁ O SEGREDO: O nome do arquivo tem que ser igual ao que você salvou */
+            background-image: url('sorriso.jpg'); 
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             
-            /* Começa invisível e escondida */
             opacity: 0;
             transform: scaleY(0.1);
             transition: opacity 2s, transform 1.5s ease-out;
-            
             z-index: 5;
         }
 
-        /* --- TEXTOS --- */
         .msg {
             font-size: 24px;
             opacity: 0;
             transition: opacity 1.5s;
             letter-spacing: 5px;
             position: absolute;
-            bottom: 20%;
+            bottom: 15%;
             text-align: center;
+            width: 100%;
         }
 
         #text1 { color: #444; text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
         #text2 { color: #8b0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); font-weight: bold; }
 
-        /* =========================================
-           CLASSES DE EFEITO (Ativadas pelo JS)
-           ========================================= */
-
-        /* A pupila vira um pontinho minúsculo */
-        .pupil-point {
-            width: 7px !important;
-            height: 7px !important;
-        }
-
-        /* Tremor constante e rápido de toda a face */
-        .face-vibrate {
-            animation: faceShake 0.12s linear infinite;
-        }
-
-        /* Faz o sorriso aparecer crescendo */
-        .mouth-reveal {
-            opacity: 0.9;
-            transform: scaleY(1);
-        }
-
-        /* =========================================
-           ANIMAÇÕES (Keyframes)
-           ========================================= */
+        /* Classes de ativação */
+        .pupil-point { width: 10px !important; height: 10px !important; }
+        .face-vibrate { animation: faceShake 0.12s linear infinite; }
+        .mouth-reveal { opacity: 1 !important; transform: scaleY(1) !important; }
 
         @keyframes faceShake {
             0% { transform: translate(0, 0); }
@@ -143,7 +115,6 @@
             0% { border-radius: 60% 40% 60% 40% / 70% 30% 70% 30%; }
             100% { border-radius: 40% 60% 40% 60% / 30% 70% 30% 70%; }
         }
-
     </style>
 </head>
 <body>
@@ -153,7 +124,6 @@
             <div class="eye"><div class="pupil"></div></div>
             <div class="eye"><div class="pupil"></div></div>
         </div>
-        
         <div id="mouth" class="mouth-smile"></div>
     </div>
 
@@ -161,52 +131,30 @@
     <div id="text2" class="msg">caçar ate sua morte...</div>
 
     <script>
-        // Seleciona os elementos
         const scaryFace = document.getElementById('scary-face');
         const pupils = document.querySelectorAll('.pupil');
         const t1 = document.getElementById('text1');
         const t2 = document.getElementById('text2');
         const mouth = document.getElementById('mouth');
 
-        // --- LINHA DO TEMPO DO TERROR ---
+        // Cronômetro
+        setTimeout(() => { t1.style.opacity = '1'; }, 10000);
 
-        // Fase 1: Início
-        // Espera 10 segundos e mostra o Texto 1.
         setTimeout(() => {
-            t1.style.opacity = '1';
-        }, 10000);
-
-        // Fase 2: A Mudança
-        // Espera mais 10 segundos (total 20s). Troca o texto e ativa o terror nos olhos.
-        setTimeout(() => {
-            // A. Esconde o primeiro texto
             t1.style.opacity = '0';
-
-            // B. Pequeno atraso para o texto 2 aparecer
             setTimeout(() => {
                 t2.style.opacity = '1';
-                
-                // C. ATIVA O TERROR NOS OLHOS (permanente)
-                // Faz a pupila encolher para um pontinho
                 pupils.forEach(p => p.classList.add('pupil-point'));
-                // Faz toda a face começar a tremer
                 scaryFace.classList.add('face-vibrate');
             }, 1000);
+        }, 20000);
 
-        }, 20000); // 10s (fase 1) + 10s (texto 1)
+        setTimeout(() => { t2.style.opacity = '0'; }, 30000);
 
-        // Fase 3: O Fim das Palavras
-        // Espera mais 10 segundos (total 31s, considerando os atrasos). O texto some.
+        // Revelação do Sorriso (33 segundos)
         setTimeout(() => {
-            t2.style.opacity = '0';
-        }, 31000);
-
-        // Fase 4: A Revelação Final
-        // Espera 3 segundos DEPOIS que o texto some (total 34s). O SORRISO APARECE.
-        setTimeout(() => {
-            // A classe 'mouth-reveal' faz o sorriso aparecer e crescer.
             mouth.classList.add('mouth-reveal');
-        }, 34000); // 31s (fase 3) + 3s (atraso)
+        }, 33000);
 
     </script>
 </body>
