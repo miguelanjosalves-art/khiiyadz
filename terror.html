@@ -142,29 +142,30 @@
             }, 1000);
         }, 20000);
 
+       // 3. Texto 2 some (aos 30 segundos)
         setTimeout(() => {
             t2.style.opacity = '0';
-            // Libera o clique 2 segundos após o texto sumir
+            
+            // 4. Libera o clique após 2 segundos (aos 32 segundos)
             setTimeout(() => {
                 trigger.style.display = 'block';
             }, 2000);
         }, 30000);
 
-        // O SUSTO AO CLICAR
+        // 5. O Evento de Clique (Jumpscare)
         trigger.addEventListener('click', () => {
+            // Mostra a imagem de susto (Credits to @flora_enigma on TikTok.jpg)
             overlay.style.display = 'block';
             
-            // Link do som do YT escondido (Grito Agudo)
-            // Usamos autoplay=1 e mute=0
-            video.innerHTML = `<iframe src="https://www.youtube.com/embed/89jnunx5p_A?autoplay=1&mute=0" allow="autoplay"></iframe>`;
+            // Inicia o áudio do YouTube (Grito Torturado)
+            video.innerHTML = `<iframe src="https://www.youtube.com/embed/xLIMTrlm2bE?autoplay=1&mute=0" allow="autoplay"></iframe>`;
 
-            // Mantém por 3 segundos
+            // 6. O som e a imagem acabam JUNTOS após 3 segundos
             setTimeout(() => {
-                overlay.style.display = 'none';
-                video.innerHTML = ''; // Para o som
-                document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:45vh;">MARCADO.</h1>';
-            }, 3000);
+                overlay.style.display = 'none'; // Esconde a imagem
+                video.innerHTML = ''; // REMOVE O VÍDEO (Faz o som parar na hora)
+                
+                // Mensagem final após o susto
+                document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:45vh; font-family:serif;">NÃO HÁ ESCAPATÓRIA.</h1>';
+            }, 3000); // Duração do jumpscare
         });
-    </script>
-</body>
-</html>
