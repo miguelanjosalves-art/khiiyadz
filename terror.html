@@ -7,7 +7,6 @@
         body {
             background-color: #000;
             margin: 0;
-            padding: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -51,7 +50,7 @@
 
         #text2 { color: #8b0000; font-weight: bold; }
 
-        /* O JUMPSCARE (Overlay) */
+        /* --- O JUMPSCARE --- */
         #jumpscare-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -72,12 +71,13 @@
             cursor: pointer;
         }
 
-        /* Container de vídeos/sons invisíveis */
+        /* Área do Som Totalmente Escondida */
         #video-container { 
             position: absolute; 
             width: 1px; height: 1px; 
-            opacity: 0.01; 
-            left: -100px; 
+            overflow: hidden;
+            opacity: 0; 
+            pointer-events: none;
         }
 
         .pupil-point { width: 8px !important; height: 8px !important; }
@@ -115,9 +115,10 @@
         const overlay = document.getElementById('jumpscare-overlay');
         const video = document.getElementById('video-container');
 
-        // Sequência de animação inicial
+        // 10s: Texto 1
         setTimeout(() => { t1.style.opacity = '1'; }, 10000);
 
+        // 20s: Texto 2 + Olhos
         setTimeout(() => {
             t1.style.opacity = '0';
             setTimeout(() => {
@@ -127,44 +128,45 @@
             }, 1000);
         }, 20000);
 
+        // 30s: Texto some
         setTimeout(() => {
             t2.style.opacity = '0';
+            // 32s: Libera o clique
             setTimeout(() => { trigger.style.display = 'block'; }, 2000);
         }, 30000);
 
-        // --- O SUSTO FINAL ---
+        // O SUSTO (Ao clicar)
         trigger.addEventListener('click', () => {
-            // 1. Ativa o overlay visual
             overlay.style.display = 'block';
             
-            // 2. Toca os sons (Vídeo do susto + o som que você enviou)
+            // Toca os dois sons simultaneamente e escondidos
+            // xLIMTrlm2bE (Susto visual) + QvghQOO3K-I (Som solicitado)
             video.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/xLIMTrlm2bE?autoplay=1&mute=0" allow="autoplay"></iframe>
-                <iframe src="https://www.youtube.com/embed/QvghQOO3K-I?autoplay=1&mute=0" allow="autoplay"></iframe>
+                <iframe src="https://www.youtube.com/embed/xLIMTrlm2bE?autoplay=1" allow="autoplay"></iframe>
+                <iframe src="https://www.youtube.com/embed/QvghQOO3K-I?autoplay=1" allow="autoplay"></iframe>
             `;
 
-            // 3. Após 3 segundos de susto, muda para a frase
             setTimeout(() => {
                 overlay.style.display = 'none';
-                video.innerHTML = ''; // Para todos os sons
+                video.innerHTML = ''; // Para todos os áudios
                 
-                // Limpa a tela e coloca a frase
+                // Muda o corpo para a frase final
                 document.body.innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:black; color:white;">
-                        <h1 style="font-size:3rem; text-shadow: 0 0 10px red;">ESTÁ ATRÁS DE VOCÊ.</h1>
-                        <div id="delayed-image" style="display:none; margin-top:30px;">
-                            <img src="LINK_DA_SUA_IMAGEM_AQUI" style="max-width:80%; border:3px solid #8b0000; box-shadow: 0 0 30px red;">
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background-color:black;">
+                        <h1 style="color:white; text-align:center; font-family:serif;">ESTÁ ATRÁS DE VOCÊ.</h1>
+                        <div id="img-final" style="display:none; margin-top:20px;">
+                            <img src="https://i.pinimg.com/736x/24/bc/bc/24bcbcc095e260ae54f365f4f610a03e.jpg" style="max-width:80%; border:2px solid red;">
                         </div>
                     </div>
                 `;
 
-                // 4. 2 segundos após a frase, a imagem aparece
+                // 2 segundos após a frase, mostra a imagem
                 setTimeout(() => {
-                    const imgDiv = document.getElementById('delayed-image');
-                    if(imgDiv) imgDiv.style.display = 'block';
+                    const img = document.getElementById('img-final');
+                    if(img) img.style.display = 'block';
                 }, 2000);
 
-            }, 3000);
+            }, 3000); // Duração do susto e dos sons: 3 segundos
         });
     </script>
 </body>
